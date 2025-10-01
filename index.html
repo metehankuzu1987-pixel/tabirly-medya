@@ -43,7 +43,7 @@
       display:flex;flex-direction:column;height:100%;
       border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--paper);box-shadow:var(--shadow)
     }
-    /* görsel */
+    /* görsel (sabit görünüm) */
     .tm-thumb{position:relative;width:100%;aspect-ratio:16/9;background:#eef1f8;overflow:hidden}
     .tm-thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
     /* logo fallback: TAM görünüm */
@@ -52,8 +52,8 @@
 
     .tm-card h3{font-size:13px;margin:8px 10px 4px}
     .tm-meta{color:var(--muted);font-size:11px;margin:0 10px 8px}
-    /* intro kaldırıldı — sadece istersen display:block yaparsın */
-    .tm-desc{display:none;color:#3b4661;font-size:12px;margin:0 10px 10px}
+    /* intro kaldırıldı */
+    .tm-desc{display:none}
 
     .tm-actions{display:flex;gap:6px;padding:8px 10px;border-top:1px solid var(--line);margin-top:auto}
     .tm-btn{appearance:none;border:1px solid var(--line);background:#f1f4ff;color:#192038;padding:6px 8px;border-radius:8px;font:700 11px/1 Inter;cursor:pointer}
@@ -104,7 +104,7 @@
 
   <script>
   /* ===== CONFIG ===== */
-  // Yerleşik (inline) logo — “tam görünüm”
+  // Yerleşik (inline) logo — “tam görünüm” (fallback)
   const LOGO_URL = 'data:image/svg+xml;utf8,\
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 288">\
     <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0">\
@@ -142,7 +142,7 @@
         selKind=$('#tm-kind'), selSource=$('#tm-source');
   let state={items:[],feeds:FEEDS,kind:'all',source:'all',q:''};
 
-  const setCounts=()=>{$('#tm-feedCount').textContent=state.feeds.length; $('#tm-itemCount').textContent=state.items.length;};
+  const setCounts=()=>{$('#tm-feedCount').textContent=state.feeds.length; $('#tm-itemCount').textContent=filteredItems().length;};
   const humanDate=d=>{ try{return new Date(d).toLocaleString('tr-TR')}catch(e){return''} };
   const strip=html=>{ if(!html) return ''; const t=document.createElement('div'); t.innerHTML=html; return (t.textContent||'').trim().slice(0,240); };
 
@@ -155,10 +155,15 @@
     selSource.innerHTML = options.join(''); selSource.value = state.source;
   }
 
+  const primaryLabel=(it)=>{
+    if(it.kind==='podcast' || it.kind==='music') return '▶ Dinle';
+    if(it.kind==='video') return '▶ İzle';
+    return '📖 Oku';
+  };
+
   function cardHTML(it){
     const hasImg = Boolean(it.image);
-    const imgSrc = hasImg ? it.image : LOGO_URL;
-    const date = it.date ? humanDate(it.date) : '';
+    const imgSrc = hasImg ? it.image : LOGO_URL; // sabit fallback logo
     const safeTitle=(it.title||'İçerik').replace(/"/g,'&quot;');
     return `<article class="tm-card" data-id="${it._id}" data-kind="${it.kind}">
       <div class="tm-thumb ${hasImg ? '' : 'fallback'}">
@@ -166,11 +171,9 @@
              onerror="this.src='${LOGO_URL}'; this.closest('.tm-thumb').classList.add('fallback');">
       </div>
       <h3 title="${safeTitle}">${it.title||'Başlıksız'}</h3>
-      <div class="tm-meta">${it.kind.toUpperCase()} • ${it.source||''} • ${date}</div>
-      <p class="tm-desc">${it.summary||''}</p>
+      <div class="tm-meta">${it.source||''}</div>
       <div class="tm-actions">
-        <button class="tm-btn primary tm-play">▶ Oynat / Aç</button>
-        <a class="tm-btn" href="${it.link||'#'}" target="_blank" rel="noopener">Bağlantı</a>
+        <button class="tm-btn primary tm-play">${primaryLabel(it)}</button>
       </div>
     </article>`;
   }
@@ -305,7 +308,7 @@
     state.items = items.map((it,idx)=>({
       ...it,
       _id: String(idx),
-      image: it.image && it.image.startsWith('http') ? it.image : '' // bozuk/relative ise boş
+      image: (it.image && /^https?:/i.test(it.image)) ? it.image : '' // bozuk/relative ise boş (logo düşer)
     }));
     buildSelectors(); render();
   }
