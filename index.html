@@ -8,61 +8,52 @@
   <style>
     :root{
       --bg:#f7f8ff; --paper:#fff; --ink:#0e1320; --muted:#5e6a86;
-      --line:rgba(99,110,140,.18); --br:16px; --shadow:0 10px 30px rgba(14,19,32,.08);
+      --line:rgba(99,110,140,.18); --br:12px; --shadow:0 8px 20px rgba(14,19,32,.08);
       --grad:linear-gradient(90deg,#ff0080,#ff8c00,#ffd700,#00d084,#00bfff,#7b61ff,#ff0080);
     }
     html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);
-      font:15px/1.5 system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif}
-    .visually-hidden{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+      font:14px/1.45 system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif}
     .rainbow{background:var(--grad);background-size:300% 100%;animation:flow 12s linear infinite}
     @keyframes flow{0%{background-position:0 0}100%{background-position:300% 0}}
+    .visually-hidden{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 
-    #app{position:fixed;inset:0;display:flex;flex-direction:column;gap:12px;padding:14px;box-sizing:border-box}
-    .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px;border:1px solid var(--line);
-         border-radius:var(--br);background:var(--paper);box-shadow:var(--shadow)}
-    .brand{display:flex;align-items:center;gap:10px;min-width:0}
-    .logo{width:28px;height:28px;border-radius:8px;box-shadow:var(--shadow);background:var(--grad)}
-    .title{font:800 15px/1 Inter,system-ui;white-space:nowrap}
+    #app{position:fixed;inset:0;display:flex;flex-direction:column;gap:10px;padding:12px;box-sizing:border-box}
+    .top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px;border:1px solid var(--line);
+         border-radius:14px;background:var(--paper);box-shadow:var(--shadow)}
+    .brand{display:flex;align-items:center;gap:8px}
+    .logo{width:22px;height:22px;border-radius:6px;background:var(--grad)}
+    .title{font:800 14px/1 Inter,system-ui;white-space:nowrap}
     .grow{flex:1;min-width:160px}
-    .control{display:flex;gap:8px;align-items:center}
-    select,input[type="text"]{appearance:none;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#f9faff;color:var(--ink);font-weight:700}
-    select{min-width:150px}
-    .search{display:flex;gap:8px;align-items:center}
+    select,input[type="text"],.btn{appearance:none;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:#f9faff;color:var(--ink);font:700 12px/1 Inter}
+    select{min-width:140px}
     .search input{width:min(420px,60vw)}
+    .btn.primary{border-color:transparent;color:#fff;background:var(--grad);background-size:300% 100%;animation:flow 12s linear infinite;cursor:pointer}
     .counts{margin-left:auto;color:var(--muted);font-size:12px}
 
-    .grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
-    @media (max-width:1400px){.grid{grid-template-columns:repeat(8,1fr)}}
-    @media (max-width:900px){.grid{grid-template-columns:repeat(4,1fr)}}
-    @media (max-width:640px){.grid{grid-template-columns:repeat(2,1fr)}}
+    .notice{font-size:12px;color:#3b4661;background:#fff;border:1px dashed var(--line);border-radius:10px;padding:8px 10px}
+    .notice b{font-weight:800}
 
-    .card{grid-column:span 3;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--paper);box-shadow:var(--shadow);content-visibility:auto}
-    .edge{height:4px}
-    /* ↓ Görsel alanı */
+    /* Küçük kartlar: otomatik sütunlar */
+    .grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;background:transparent}
+    @media (max-width:520px){.grid{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}}
+
+    .card{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--paper);box-shadow:var(--shadow)}
+    .edge{height:3px}
     .thumb{position:relative;width:100%;aspect-ratio:16/9;background:#eef1f8;overflow:hidden}
     .thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-    /* Fallback (logo) görünümü */
     .thumb.fallback{background:#f6edf7}
-    .thumb.fallback img{object-fit:contain;padding:24px;filter:saturate(110%)}
-    .card h3{font-size:15px;margin:10px 12px 6px}
-    .meta{color:var(--muted);font-size:12px;margin:0 12px 10px}
-    .desc{color:#3b4661;font-size:13px;margin:0 12px 12px}
-    .actions{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line);margin-top:auto}
-    .btn{appearance:none;border:1px solid var(--line);background:#f1f4ff;color:#192038;padding:8px 10px;border-radius:10px;font:700 12px/1 Inter;cursor:pointer}
-    .btn.primary{border-color:transparent;color:#fff;background:var(--grad);background-size:300% 100%;animation:flow 12s linear infinite}
+    .thumb.fallback img{object-fit:contain;padding:18px;filter:saturate(110%)}
+    .card h3{font-size:13px;margin:8px 10px 4px}
+    .meta{color:var(--muted);font-size:11px;margin:0 10px 8px}
+    .desc{color:#3b4661;font-size:12px;margin:0 10px 10px}
+    .actions{display:flex;gap:6px;padding:8px 10px;border-top:1px solid var(--line);margin-top:auto}
+    .btn{cursor:pointer}
 
-    .modal{position:fixed;inset:0;background:rgba(15,19,32,.55);display:none;align-items:center;justify-content:center;padding:20px}
+    .modal{position:fixed;inset:0;background:rgba(15,19,32,.55);display:none;align-items:center;justify-content:center;padding:18px}
     .modal.open{display:flex}
-    .sheet{width:min(1100px,96vw);height:min(80vh,80vh);background:var(--paper);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:grid;grid-template-rows:auto 1fr;box-shadow:var(--shadow)}
-    .sheet header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line)}
+    .sheet{width:min(960px,96vw);height:min(76vh,76vh);background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;display:grid;grid-template-rows:auto 1fr;box-shadow:var(--shadow)}
+    .sheet header{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--line)}
     .sheet iframe,.sheet audio,.sheet video{width:100%;height:100%;border:0;background:#000}
-
-    @media (max-width:480px){
-      .top{padding:10px}
-      .title{font-size:14px}
-      select,.search input{font-weight:600;padding:9px 10px}
-      .btn{padding:7px 9px}
-    }
   </style>
 </head>
 <body>
@@ -72,22 +63,29 @@
         <div class="logo rainbow" aria-hidden="true"></div>
         <div class="title">Tabirly Medya Kütüphanesi</div>
       </div>
-      <div class="control">
-        <label class="visually-hidden" for="selKind">Kategori</label>
-        <select id="selKind" title="Kategori seç (Blog/Podcast/Video/Müzik)"></select>
-      </div>
-      <div class="control">
-        <label class="visually-hidden" for="selSource">Kaynak</label>
-        <select id="selSource" title="Kaynağa göre filtrele"></select>
-      </div>
+      <label class="visually-hidden" for="selKind">Kategori</label>
+      <select id="selKind" title="Kategori seç (Blog/Podcast/Video/Müzik)"></select>
+
+      <label class="visually-hidden" for="selSource">Kaynak</label>
+      <select id="selSource" title="Kaynağa göre filtrele"></select>
+
       <div class="search grow">
         <input id="q" type="text" placeholder="Ara: başlık, açıklama, kaynak..." />
       </div>
+
+      <button id="refresh" class="btn">↻ Yenile</button>
       <div class="counts"><span id="feedCount">0</span> kaynak · <span id="itemCount">0</span> içerik</div>
     </div>
+
+    <div class="notice">
+      ⚠️ <b>Bilgilendirme:</b> RSS üzerinden görsel sağlanmayan içeriklerde yer tutucu olarak Tabirly logosu kullanılır.
+      İçerikler ve tüm haklar ilgili sahiplerine aittir.
+    </div>
+
     <div id="grid" class="grid"></div>
   </div>
 
+  <!-- Modal Player -->
   <div id="playerModal" class="modal" role="dialog" aria-modal="true">
     <div class="sheet">
       <header>
@@ -100,18 +98,16 @@
 
   <script>
   // ===== CONFIG =====
-  // Görsel yoksa kullanılacak logo
-  const LOGO_URL = 'https://metehankuzu1987-pixel.github.io/tabirly-medya-k-t-phanesi/default.png';
-  // CORS proxy
+  const LOGO_URL = 'https://metehankuzu1987-pixel.github.io/tabirly-medya-k-t-phanesi/default.png'; // senin fallback logon
   const CORS = 'https://little-paper-de94.metehankuzu1987.workers.dev';
 
-  // Feed’ler
+  // KAYNAKLAR — istediğin gibi düzenle
   const FEEDS = [
     { title:'Tabirly', url:'https://tr.tabirly.com/feeds/posts/default?alt=rss', type:'blog' },
     { title:'Pazartesi Meditasyonları', url:'https://media.rss.com/pazartesimeditasyonu/feed.xml', type:'podcast' },
-    { title:'Miboso x Dr. Neslihan İskit (Rehberli Meditasyon)', url:'https://media.rss.com/mibosowellbeing/feed.xml', type:'blog' },
-    { title:'Yoga Nidra Podcast', url:'https://anchor.fm/s/d3781a94/podcast/rss', type:'music' }
-  ];
+    { title:'Miboso x Dr. Neslihan İskit (Rehberli Meditasyon)', url:'https://media.rss.com/mibosowellbeing/feed.xml', type:'podcast' },
+    { title:'Yoga Nidra Podcast', url:'https://anchor.fm/s/d3781a94/podcast/rss', type:'podcast' }
+
 
   const TYPES = [
     {key:'all', label:'Hepsi'},
@@ -130,7 +126,7 @@
 
   function setCounts(){ $('#feedCount').textContent=state.feeds.length; $('#itemCount').textContent=state.items.length; }
   const humanDate=d=>{ try{return new Date(d).toLocaleString('tr-TR')}catch(e){return''} };
-  function strip(html){ if(!html) return ''; const t=document.createElement('div'); t.innerHTML=html; return (t.textContent||'').trim().slice(0,240); }
+  function strip(html){ if(!html) return ''; const t=document.createElement('div'); t.innerHTML=html; return (t.textContent||'').trim().slice(0,200); }
 
   function buildSelectors(){
     selKind.innerHTML = TYPES.map(t=>`<option value="${t.key}">${t.label}</option>`).join('');
@@ -141,16 +137,16 @@
     selSource.innerHTML = options.join(''); selSource.value = state.source;
   }
 
+  // Her kartta görsel var: feed görseli yoksa LOGO_URL
   function cardHTML(it){
-    const hasImg = Boolean(it.image || it.thumbnail);
-    const imgSrc = hasImg ? (it.image || it.thumbnail) : LOGO_URL;
-    const thumb = `<div class="thumb ${hasImg ? '' : 'fallback'}">
-        <img src="${imgSrc}" alt="${(it.title||'İçerik').replace(/"/g,'&quot;')}" loading="lazy">
-      </div>`;
+    const imgSrc = it.image || it.thumbnail || LOGO_URL;
+    const useFallback = !(it.image || it.thumbnail);
     const date = it.date ? humanDate(it.date) : '';
     return `<article class="card" data-kind="${it.kind}">
       <div class="edge rainbow" aria-hidden="true"></div>
-      ${thumb}
+      <div class="thumb ${useFallback ? 'fallback':''}">
+        <img src="${imgSrc}" alt="${(it.title||'İçerik').replace(/"/g,'&quot;')}" loading="lazy">
+      </div>
       <h3 title="${(it.title||'').replace(/"/g,'&quot;')}">${it.title||'Başlıksız'}</h3>
       <div class="meta">${it.kind.toUpperCase()} • ${it.source||''} • ${date}</div>
       <p class="desc">${it.summary||''}</p>
@@ -183,13 +179,14 @@
     }else if(it.link){
       const f=document.createElement('iframe'); f.src=it.link; playerBody.appendChild(f);
     }else{
-      playerBody.innerHTML='<div style="padding:20px">Görüntülenecek medya bulunamadı.</div>';
+      playerBody.innerHTML='<div style="padding:16px">Görüntülenecek medya bulunamadı.</div>';
     }
     playerModal.classList.add('open');
   }
   $('#closePlayer').onclick=()=>playerModal.classList.remove('open');
 
-  let t; q.oninput=()=>{ clearTimeout(t); t=setTimeout(()=>{ state.q=q.value; render(); },120); };
+  // Etkileşimler
+  let t; q.oninput=()=>{ clearTimeout(t); t=setTimeout(()=>{ state.q=q.value; render(); },100); };
   selKind.onchange=()=>{ state.kind=selKind.value; render(); };
   selSource.onchange=()=>{ state.source=selSource.value; render(); };
   grid.addEventListener('click',e=>{
@@ -204,6 +201,9 @@
     });
     const it=filtered[idx]; if(e.target.classList.contains('play')) openPlayer(it);
   });
+
+  // ↻ Yenile (sayfayı yeniden yüklemeden tüm feed’leri çek)
+  document.getElementById('refresh').onclick = () => loadAll();
 
   // ===== FETCH/PARSE =====
   async function fetchText(url){
