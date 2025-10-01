@@ -4,91 +4,69 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Tabirly Medya Kütüphanesi</title>
-  <meta name="description" content="Tabirly için blog, podcast, video ve müzik RSS/Atom/JSON feed içeriklerini tek ekranda toplayan medya kütüphanesi. Ziyaretçilere yalnızca içerik gösterilir; yönetim paneli yok." />
+  <meta name="description" content="Tabirly için blog, podcast, video ve müzik RSS/Atom/JSON feed içeriklerini tek ekranda toplayan medya kütüphanesi." />
   <style>
-    /* ================= THEME: Rainbow Light ================= */
     :root{
-      --bg: #f7f8ff;                 /* açık arkaplan */
-      --paper: #ffffff;               /* kart */
-      --ink: #0e1320;                 /* metin */
-      --muted: #5e6a86;               /* ikincil metin */
-      --line: rgba(99, 110, 140, .18);
-      --br: 16px;
-      --shadow: 0 10px 30px rgba(14,19,32,.08);
-      --grad: linear-gradient(90deg,#ff0080, #ff8c00, #ffd700, #00d084, #00bfff, #7b61ff, #ff0080);
-      --accent: #7b61ff;             /* fallback */
+      --bg:#f7f8ff; --paper:#fff; --ink:#0e1320; --muted:#5e6a86;
+      --line:rgba(99,110,140,.18); --br:16px; --shadow:0 10px 30px rgba(14,19,32,.08);
+      --grad:linear-gradient(90deg,#ff0080,#ff8c00,#ffd700,#00d084,#00bfff,#7b61ff,#ff0080);
     }
-
     html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);
-      font: 15px/1.5 system-ui, -apple-system, Segoe UI, Inter, Roboto, Arial, sans-serif;
-      color-scheme: light;}
-
-    /* Utility */
-    .visually-hidden{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;overflow:hidden!important}
-
-    /* Animated rainbow bar (subtle) */
-    .rainbow{background:var(--grad);background-size:300% 100%;animation:flow 12s linear infinite;}
+      font:15px/1.5 system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif}
+    .visually-hidden{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+    .rainbow{background:var(--grad);background-size:300% 100%;animation:flow 12s linear infinite}
     @keyframes flow{0%{background-position:0 0}100%{background-position:300% 0}}
 
-    /* ======= App Layout ======= */
-    #app{position:fixed; inset:0; display:flex; flex-direction:column; gap:12px; padding:14px; box-sizing:border-box}
-
-    .top{display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:12px; border:1px solid var(--line); border-radius:var(--br); background:var(--paper); box-shadow:var(--shadow)}
-    .brand{display:flex; align-items:center; gap:10px; min-width:0}
-    .logo{width:28px;height:28px;border-radius:8px; box-shadow:var(--shadow); background:var(--grad)}
-    .title{font:800 15px/1 Inter, system-ui; white-space:nowrap}
-
-    .grow{flex:1; min-width:160px}
-    .control{display:flex; gap:8px; align-items:center}
-    select, input[type="text"]{appearance:none; border:1px solid var(--line); border-radius:12px; padding:10px 12px; background:#f9faff; color:var(--ink); font-weight:700}
+    #app{position:fixed;inset:0;display:flex;flex-direction:column;gap:12px;padding:14px;box-sizing:border-box}
+    .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px;border:1px solid var(--line);
+         border-radius:var(--br);background:var(--paper);box-shadow:var(--shadow)}
+    .brand{display:flex;align-items:center;gap:10px;min-width:0}
+    .logo{width:28px;height:28px;border-radius:8px;box-shadow:var(--shadow);background:var(--grad)}
+    .title{font:800 15px/1 Inter,system-ui;white-space:nowrap}
+    .grow{flex:1;min-width:160px}
+    .control{display:flex;gap:8px;align-items:center}
+    select,input[type="text"]{appearance:none;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#f9faff;color:var(--ink);font-weight:700}
     select{min-width:150px}
-    .search{display:flex; gap:8px; align-items:center}
-    .search input{width:min(420px, 60vw)}
+    .search{display:flex;gap:8px;align-items:center}
+    .search input{width:min(420px,60vw)}
+    .counts{margin-left:auto;color:var(--muted);font-size:12px}
 
-    .counts{margin-left:auto; color:var(--muted); font-size:12px}
-
-    .grid{flex:1; min-height:0; display:grid; grid-template-columns:repeat(12,1fr); gap:14px}
+    .grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
     @media (max-width:1400px){.grid{grid-template-columns:repeat(8,1fr)}}
     @media (max-width:900px){.grid{grid-template-columns:repeat(4,1fr)}}
     @media (max-width:640px){.grid{grid-template-columns:repeat(2,1fr)}}
 
-    .card{grid-column:span 3; display:flex; flex-direction:column; border:1px solid var(--line); border-radius:18px; overflow:hidden; background:var(--paper); box-shadow:var(--shadow); content-visibility:auto}
-    .edge{height:4px} /* rainbow edge */
-    .thumb{aspect-ratio:16/9; background:#eef1f8; display:flex; align-items:center; justify-content:center; color:#9aa3b2; font-size:12px}
-    .card h3{font-size:15px; margin:10px 12px 6px}
-    .meta{color:var(--muted); font-size:12px; margin:0 12px 10px}
-    .desc{color:#3b4661; font-size:13px; margin:0 12px 12px}
-    .actions{display:flex; gap:8px; padding:10px 12px; border-top:1px solid var(--line); margin-top:auto}
-    .btn{appearance:none; border:1px solid var(--line); background:#f1f4ff; color:#192038; padding:8px 10px; border-radius:10px; font:700 12px/1 Inter; cursor:pointer}
-    .btn.primary{border-color:transparent; color:#fff; background:var(--grad); background-size:300% 100%; animation:flow 12s linear infinite}
+    .card{grid-column:span 3;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--paper);box-shadow:var(--shadow);content-visibility:auto}
+    .edge{height:4px}
+    /* ↓ Görsel alanı */
+    .thumb{position:relative;width:100%;aspect-ratio:16/9;background:#eef1f8;overflow:hidden}
+    .thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+    /* Fallback (logo) görünümü */
+    .thumb.fallback{background:#f6edf7}
+    .thumb.fallback img{object-fit:contain;padding:24px;filter:saturate(110%)}
+    .card h3{font-size:15px;margin:10px 12px 6px}
+    .meta{color:var(--muted);font-size:12px;margin:0 12px 10px}
+    .desc{color:#3b4661;font-size:13px;margin:0 12px 12px}
+    .actions{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line);margin-top:auto}
+    .btn{appearance:none;border:1px solid var(--line);background:#f1f4ff;color:#192038;padding:8px 10px;border-radius:10px;font:700 12px/1 Inter;cursor:pointer}
+    .btn.primary{border-color:transparent;color:#fff;background:var(--grad);background-size:300% 100%;animation:flow 12s linear infinite}
 
-    /* Modal */
-    .modal{position:fixed; inset:0; background:rgba(15,19,32,.55); display:none; align-items:center; justify-content:center; padding:20px}
+    .modal{position:fixed;inset:0;background:rgba(15,19,32,.55);display:none;align-items:center;justify-content:center;padding:20px}
     .modal.open{display:flex}
-    .sheet{width:min(1100px,96vw); height:min(80vh,80vh); background:var(--paper); border:1px solid var(--line); border-radius:16px; overflow:hidden; display:grid; grid-template-rows:auto 1fr; box-shadow:var(--shadow)}
-    .sheet header{display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid var(--line)}
-    .sheet iframe,.sheet audio,.sheet video{width:100%; height:100%; border:0; background:#000}
+    .sheet{width:min(1100px,96vw);height:min(80vh,80vh);background:var(--paper);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:grid;grid-template-rows:auto 1fr;box-shadow:var(--shadow)}
+    .sheet header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line)}
+    .sheet iframe,.sheet audio,.sheet video{width:100%;height:100%;border:0;background:#000}
 
-    /* Mobile polish */
     @media (max-width:480px){
       .top{padding:10px}
       .title{font-size:14px}
-      select, .search input{font-weight:600; padding:9px 10px}
+      select,.search input{font-weight:600;padding:9px 10px}
       .btn{padding:7px 9px}
     }
-    /* Fallback (logo) görselleri için daha zarif görünüm */
-.thumb.fallback{ background:#f5eef7 }                 /* yumuşak zemin */
-.thumb img{ width:100%; height:100%; object-fit:cover }
-.thumb.fallback img{
-  object-fit:contain;                                  /* taşıma değil, sığdır */
-  padding:22px;                                        /* boşluk bırak */
-  filter:saturate(110%);                               /* hafif canlılık */
-}
   </style>
 </head>
 <body>
   <div id="app">
-    <!-- TOP BAR: Brand + Filters (Category & Source) + Search (optional) -->
     <div class="top">
       <div class="brand">
         <div class="logo rainbow" aria-hidden="true"></div>
@@ -107,12 +85,9 @@
       </div>
       <div class="counts"><span id="feedCount">0</span> kaynak · <span id="itemCount">0</span> içerik</div>
     </div>
-
-    <!-- CONTENT GRID -->
     <div id="grid" class="grid"></div>
   </div>
 
-  <!-- Modal Player -->
   <div id="playerModal" class="modal" role="dialog" aria-modal="true">
     <div class="sheet">
       <header>
@@ -124,33 +99,20 @@
   </div>
 
   <script>
-  // ================== CONFIG ==================
-  // 0) LOGO: Görsel yoksa kullanılacak tekil fallback
+  // ===== CONFIG =====
+  // Görsel yoksa kullanılacak logo
   const LOGO_URL = 'https://metehankuzu1987-pixel.github.io/tabirly-medya-k-t-phanesi/default.png';
-// alternatif:'; // <-- KENDİ LOGONU KOY
-
-  // 1) CORS proxy
+  // CORS proxy
   const CORS = 'https://little-paper-de94.metehankuzu1987.workers.dev';
 
-  // 2) Varsayılan feed'ler (dilediğin gibi değiştir)
+  // Feed’ler
   const FEEDS = [
     { title:'Tabirly Blog (JSON Feed ör.)', url:'https://www.jsonfeed.org/feed.json', type:'blog' },
     { title:'NPR - Planet Money (Podcast RSS)', url:'https://feeds.npr.org/510289/podcast.xml', type:'podcast' },
     { title:'The Verge (Atom)', url:'https://www.theverge.com/rss/index.xml', type:'blog' },
     { title:'Synthwave FM (Müzik Podcast)', url:'https://feeds.simplecast.com/dLRotFG5', type:'music' }
-    // YouTube: https://www.youtube.com/feeds/videos.xml?channel_id=...
   ];
 
-  // (Opsiyonel) Admin modu: İlerde panel eklersen kullanırsın
-  const ADMIN_TOKEN = 'tabirly123';
-  const url = new URL(location.href);
-  const isAdmin = ADMIN_TOKEN && (
-    url.searchParams.get('admin') === ADMIN_TOKEN ||
-    localStorage.getItem('tabirly_admin') === ADMIN_TOKEN
-  );
-  if (isAdmin) { document.documentElement.classList.add('admin'); }
-
-  // 3) Kategoriler
   const TYPES = [
     {key:'all', label:'Hepsi'},
     {key:'blog', label:'Blog'},
@@ -159,62 +121,53 @@
     {key:'music', label:'Müzik'}
   ];
 
-  // ================== STATE/REFS ==================
-  const $ = (s,root=document)=>root.querySelector(s);
-  const grid = $('#grid');
-  const q = $('#q');
-  const playerModal = $('#playerModal');
-  const playerBody = $('#playerBody');
-  const playerTitle = $('#playerTitle');
-  const selKind = $('#selKind');
-  const selSource = $('#selSource');
+  // ===== STATE/REFS =====
+  const $=(s,r=document)=>r.querySelector(s);
+  const grid=$('#grid'), q=$('#q'), playerModal=$('#playerModal'),
+        playerBody=$('#playerBody'), playerTitle=$('#playerTitle'),
+        selKind=$('#selKind'), selSource=$('#selSource');
+  let state={items:[],feeds:FEEDS,kind:'all',source:'all',q:''};
 
-  let state = { items:[], feeds:FEEDS, kind:'all', source:'all', q:'' };
-
-  function setCounts(){
-    document.getElementById('feedCount').textContent = state.feeds.length;
-    document.getElementById('itemCount').textContent = state.items.length;
-  }
-
-  function humanDate(d){ try{ return new Date(d).toLocaleString('tr-TR'); }catch(e){ return ''} }
-  function strip(html){ if(!html) return ''; const tmp = document.createElement('div'); tmp.innerHTML = html; return (tmp.textContent||'').trim().slice(0,240); }
+  function setCounts(){ $('#feedCount').textContent=state.feeds.length; $('#itemCount').textContent=state.items.length; }
+  const humanDate=d=>{ try{return new Date(d).toLocaleString('tr-TR')}catch(e){return''} };
+  function strip(html){ if(!html) return ''; const t=document.createElement('div'); t.innerHTML=html; return (t.textContent||'').trim().slice(0,240); }
 
   function buildSelectors(){
     selKind.innerHTML = TYPES.map(t=>`<option value="${t.key}">${t.label}</option>`).join('');
     selKind.value = state.kind;
-    const options = ['<option value="all">Tüm kaynaklar</option>'].concat(state.feeds.map((f,i)=>`<option value="${i}">${f.title||('Kaynak '+(i+1))}</option>`));
-    selSource.innerHTML = options.join('');
-    selSource.value = state.source;
+    const options = ['<option value="all">Tüm kaynaklar</option>'].concat(
+      state.feeds.map((f,i)=>`<option value="${i}">${f.title||('Kaynak '+(i+1))}</option>`)
+    );
+    selSource.innerHTML = options.join(''); selSource.value = state.source;
   }
 
-function cardHTML(it){
-  const hasImg = Boolean(it.image || it.thumbnail);
-  const imgSrc = hasImg ? (it.image || it.thumbnail) : LOGO_URL;
-  const thumb = `
-    <div class="thumb ${hasImg ? '' : 'fallback'}">
-      <img src="${imgSrc}" alt="${(it.title||'İçerik').replace(/\\"/g,'&quot;')}" loading="lazy">
-    </div>
-  `;
-  const date = it.date ? humanDate(it.date) : '';
-  return `<article class="card" data-kind="${it.kind}" data-src="${it.src||''}">
-    <div class="edge rainbow" aria-hidden="true"></div>
-    ${thumb}
-    <h3 title="${(it.title||'').replace(/\\"/g,'&quot;')}">${it.title||'Başlıksız'}</h3>
-    <div class="meta">${it.kind.toUpperCase()} • ${it.source||''} • ${date}</div>
-    <p class="desc">${it.summary||''}</p>
-    <div class="actions">
-      <button class="btn primary play">▶ Oynat / Aç</button>
-      <a class="btn" href="${it.link||'#'}" target="_blank" rel="noopener">Bağlantı</a>
-    </div>
-  </article>`;
-}
- function render(){
+  function cardHTML(it){
+    const hasImg = Boolean(it.image || it.thumbnail);
+    const imgSrc = hasImg ? (it.image || it.thumbnail) : LOGO_URL;
+    const thumb = `<div class="thumb ${hasImg ? '' : 'fallback'}">
+        <img src="${imgSrc}" alt="${(it.title||'İçerik').replace(/"/g,'&quot;')}" loading="lazy">
+      </div>`;
+    const date = it.date ? humanDate(it.date) : '';
+    return `<article class="card" data-kind="${it.kind}">
+      <div class="edge rainbow" aria-hidden="true"></div>
+      ${thumb}
+      <h3 title="${(it.title||'').replace(/"/g,'&quot;')}">${it.title||'Başlıksız'}</h3>
+      <div class="meta">${it.kind.toUpperCase()} • ${it.source||''} • ${date}</div>
+      <p class="desc">${it.summary||''}</p>
+      <div class="actions">
+        <button class="btn primary play">▶ Oynat / Aç</button>
+        <a class="btn" href="${it.link||'#'}" target="_blank" rel="noopener">Bağlantı</a>
+      </div>
+    </article>`;
+  }
+
+  function render(){
     const qv = state.q.toLowerCase();
     const filtered = state.items.filter(it=>{
       if(state.kind!=='all' && it.kind!==state.kind) return false;
-      if(state.source!=='all' && it._sourceIndex !== Number(state.source)) return false;
+      if(state.source!=='all' && it._sourceIndex!==Number(state.source)) return false;
       if(!qv) return true;
-      return [it.title, it.summary, it.source].filter(Boolean).join(' ').toLowerCase().includes(qv);
+      return [it.title,it.summary,it.source].filter(Boolean).join(' ').toLowerCase().includes(qv);
     });
     grid.innerHTML = filtered.map(cardHTML).join('');
     setCounts();
@@ -224,130 +177,110 @@ function cardHTML(it){
     playerTitle.textContent = it.title || 'Oynatıcı';
     playerBody.innerHTML = '';
     if(it.audio){
-      const audio = document.createElement('audio'); audio.controls = true; audio.src = it.audio; audio.autoplay = true; playerBody.appendChild(audio);
-    } else if(it.videoEmbed){
-      const iframe = document.createElement('iframe'); iframe.allow = 'autoplay; encrypted-media; picture-in-picture'; iframe.referrerPolicy = 'no-referrer-when-downgrade'; iframe.src = it.videoEmbed; playerBody.appendChild(iframe);
-    } else if(it.link){
-      const iframe = document.createElement('iframe'); iframe.src = it.link; playerBody.appendChild(iframe);
-    } else {
-      playerBody.innerHTML = '<div style="padding:20px">Görüntülenecek medya bulunamadı.</div>'
+      const a=document.createElement('audio'); a.controls=true; a.src=it.audio; a.autoplay=true; playerBody.appendChild(a);
+    }else if(it.videoEmbed){
+      const f=document.createElement('iframe'); f.allow='autoplay; encrypted-media; picture-in-picture'; f.referrerPolicy='no-referrer-when-downgrade'; f.src=it.videoEmbed; playerBody.appendChild(f);
+    }else if(it.link){
+      const f=document.createElement('iframe'); f.src=it.link; playerBody.appendChild(f);
+    }else{
+      playerBody.innerHTML='<div style="padding:20px">Görüntülenecek medya bulunamadı.</div>';
     }
     playerModal.classList.add('open');
   }
+  $('#closePlayer').onclick=()=>playerModal.classList.remove('open');
 
-  document.getElementById('closePlayer').onclick = ()=> playerModal.classList.remove('open');
-
-  // Debounced search & selectors
-  let t; q.oninput = ()=>{ clearTimeout(t); t = setTimeout(()=>{ state.q = q.value; render(); }, 120); };
-  selKind.onchange = ()=>{ state.kind = selKind.value; render(); };
-  selSource.onchange = ()=>{ state.source = selSource.value; render(); };
-
-  grid.addEventListener('click', (e)=>{
-    const card = e.target.closest('.card'); if(!card) return;
-    const idx = Array.from(grid.children).indexOf(card);
-    const filtered = state.items.filter(it=>{
+  let t; q.oninput=()=>{ clearTimeout(t); t=setTimeout(()=>{ state.q=q.value; render(); },120); };
+  selKind.onchange=()=>{ state.kind=selKind.value; render(); };
+  selSource.onchange=()=>{ state.source=selSource.value; render(); };
+  grid.addEventListener('click',e=>{
+    const card=e.target.closest('.card'); if(!card) return;
+    const idx=Array.from(grid.children).indexOf(card);
+    const qv=state.q.toLowerCase();
+    const filtered=state.items.filter(it=>{
       if(state.kind!=='all' && it.kind!==state.kind) return false;
-      if(state.source!=='all' && it._sourceIndex !== Number(state.source)) return false;
-      if(!state.q) return true;
-      return [it.title, it.summary, it.source].filter(Boolean).join(' ').toLowerCase().includes(state.q.toLowerCase());
+      if(state.source!=='all' && it._sourceIndex!==Number(state.source)) return false;
+      if(!qv) return true;
+      return [it.title,it.summary,it.source].filter(Boolean).join(' ').toLowerCase().includes(qv);
     });
-    const it = filtered[idx];
-    if(e.target.classList.contains('play')) openPlayer(it);
+    const it=filtered[idx]; if(e.target.classList.contains('play')) openPlayer(it);
   });
 
-  // ================== FEED FETCH/PARSE ==================
+  // ===== FETCH/PARSE =====
   async function fetchText(url){
-    // Önce proxy ile dene; hata olursa doğrudan dene
     try{
-      const prox = `${CORS}/?url=${encodeURIComponent(url)}`;
-      const r = await fetch(prox, {cache:'no-store'}); if(!r.ok) throw new Error('Proxy fetch');
-      const ct = r.headers.get('content-type')||''; const text = await r.text();
-      return {ct,text};
+      const r=await fetch(`${CORS}/?url=${encodeURIComponent(url)}`,{cache:'no-store'});
+      if(!r.ok) throw new Error('proxy'); const ct=r.headers.get('content-type')||''; return {ct,text:await r.text()};
     }catch(e){
-      const r2 = await fetch(url, {cache:'no-store'});
-      const ct2 = r2.headers.get('content-type')||''; const text2 = await r2.text();
-      return {ct:ct2,text:text2};
+      const r2=await fetch(url,{cache:'no-store'}); const ct2=r2.headers.get('content-type')||''; return {ct:ct2,text:await r2.text()};
     }
   }
-
-  function textContent(node,sel){ const el = node.querySelector(sel); return el? (el.textContent||'').trim():''; }
-  function attr(node,sel,attr){ const el = node.querySelector(sel); return el? el.getAttribute(attr):''; }
+  const textContent=(n,s)=>{const el=n.querySelector(s);return el?(el.textContent||'').trim():''};
+  const attr=(n,s,a)=>{const el=n.querySelector(s);return el?el.getAttribute(a):''};
 
   function parseXML(xmlStr){
-    const doc = new DOMParser().parseFromString(xmlStr,'application/xml');
-    const isAtom = !!doc.querySelector('feed > entry');
-    const channelTitle = textContent(doc, isAtom? 'feed > title' : 'channel > title');
-    const items = Array.from(doc.querySelectorAll(isAtom? 'feed > entry' : 'channel > item')).map(it=>{
-      const title = textContent(it, 'title');
-      const link = isAtom? (attr(it,'link','href')|| textContent(it,'link')) : textContent(it,'link');
-      const pub = textContent(it, isAtom? 'updated' : 'pubDate');
-      const desc = textContent(it, isAtom? 'summary' : 'description');
-      const enc = it.querySelector('enclosure');
-      const mediaContent = it.querySelector('media\\:content');
-      const mediaThumb = it.querySelector('media\\:thumbnail');
-      const enclosureUrl = enc? enc.getAttribute('url'):'';
-      const mediaUrl = mediaContent? mediaContent.getAttribute('url'):'';
-      const thumbUrl = mediaThumb? mediaThumb.getAttribute('url'):'';
-      const img = thumbUrl || mediaUrl || attr(it,'content','url') || '';
-      let videoEmbed = '';
-      if(link && /youtube.com\/watch|youtu.be/.test(link)){
-        const id = (link.match(/[?&]v=([\w-]+)/)||[])[1] || link.split('/').pop();
-        videoEmbed = `https://www.youtube.com/embed/${id}`;
+    const doc=new DOMParser().parseFromString(xmlStr,'application/xml');
+    const isAtom=!!doc.querySelector('feed > entry');
+    const channelTitle=textContent(doc,isAtom?'feed > title':'channel > title');
+    const items=Array.from(doc.querySelectorAll(isAtom?'feed > entry':'channel > item')).map(it=>{
+      const title=textContent(it,'title');
+      const link=isAtom?(attr(it,'link','href')||textContent(it,'link')):textContent(it,'link');
+      const pub=textContent(it,isAtom?'updated':'pubDate');
+      const desc=textContent(it,isAtom?'summary':'description');
+      const enc=it.querySelector('enclosure');
+      const mediaContent=it.querySelector('media\\:content');
+      const mediaThumb=it.querySelector('media\\:thumbnail');
+      const enclosureUrl=enc?enc.getAttribute('url'):'';
+      const mediaUrl=mediaContent?mediaContent.getAttribute('url'):'';
+      const thumbUrl=mediaThumb?mediaThumb.getAttribute('url'):'';
+      const img=thumbUrl||mediaUrl||attr(it,'content','url')||'';
+      let videoEmbed='';
+      if(link && /youtube\.com\/watch|youtu\.be/.test(link)){
+        const id=(link.match(/[?&]v=([\w-]+)/)||[])[1]||link.split('/').pop();
+        videoEmbed=`https://www.youtube.com/embed/${id}`;
       }
-      const audio = (enc && /audio\//.test(enc.getAttribute('type')||'')) ? enclosureUrl : '';
-      return { title, link, date:pub, summary:strip(desc), image:img, audio, videoEmbed, source:channelTitle };
+      const audio=(enc && /audio\//.test(enc.getAttribute('type')||''))?enclosureUrl:'';
+      return {title,link,date:pub,summary:strip(desc),image:img,audio,videoEmbed,source:channelTitle};
     });
     return items;
   }
 
   function parseJSONFeed(text){
-    const j = JSON.parse(text);
-    const title = j.title || 'Kaynak';
+    const j=JSON.parse(text); const title=j.title||'Kaynak';
     return (j.items||[]).map(it=>({
-      title: it.title,
-      link: it.url || (it.external_url||''),
-      date: it.date_published || it.date_modified,
-      summary: strip(it.summary || it.content_text || it.content_html||''),
-      image: it.image || (it.attachments&&it.attachments[0]?.url) || '',
-      audio: (it.attachments||[]).find(a=> (a.mime_type||'').startsWith('audio/'))?.url || '',
-      source: title
+      title:it.title,
+      link:it.url||(it.external_url||''),
+      date:it.date_published||it.date_modified,
+      summary:strip(it.summary||it.content_text||it.content_html||''),
+      image:it.image||((it.attachments||[])[0]?.url)||'',
+      audio:(it.attachments||[]).find(a=>(a.mime_type||'').startsWith('audio/'))?.url||'',
+      source:title
     }));
   }
 
-  function detectKind(feedType, item){
-    if(feedType==='podcast' || item.audio) return 'podcast';
-    if(feedType==='music') return 'music';
-    if(feedType==='video' || item.videoEmbed) return 'video';
-    return 'blog';
-  }
+  const detectKind=(t,i)=> (t==='podcast'||i.audio)?'podcast' : (t==='music')?'music' : (t==='video'||i.videoEmbed)?'video' : 'blog';
 
-  async function loadOne(feed, index){
+  async function loadOne(feed,index){
     try{
-      const {ct,text} = await fetchText(feed.url);
-      let rawItems = [];
-      if(/json|javascript/.test(ct) || text.trim().startsWith('{')) rawItems = parseJSONFeed(text);
-      else rawItems = parseXML(text);
-      return rawItems.map(it=> ({...it, kind: detectKind(feed.type, it), _sourceIndex:index}));
+      const {ct,text}=await fetchText(feed.url);
+      let raw=[];
+      if(/json|javascript/.test(ct)||text.trim().startsWith('{')) raw=parseJSONFeed(text); else raw=parseXML(text);
+      return raw.map(it=>({...it,kind:detectKind(feed.type,it),_sourceIndex:index}));
     }catch(err){
-      console.warn('Feed hatası', feed.url, err);
-      return [{ title: `Kaynak okunamadı`, summary: 'TypeError: Failed to fetch — CORS proxy gerekli olabilir.', link: feed.url, kind:'blog', source: feed.title, _sourceIndex:index }];
+      console.warn('Feed hatası',feed.url,err);
+      return [{title:'Kaynak okunamadı',summary:'TypeError: Failed to fetch — CORS proxy gerekli olabilir.',link:feed.url,kind:'blog',source:feed.title,_sourceIndex:index}];
     }
   }
 
   async function loadAll(){
-    document.getElementById('itemCount').textContent = '…';
-    const arrays = await Promise.all(state.feeds.map((f,i)=>loadOne(f,i)));
-    const list = arrays.flat().map(it=> ({...it, date: it.date? new Date(it.date): null}))
-      .sort((a,b)=> (b.date?.getTime()||0) - (a.date?.getTime()||0));
-    state.items = list; buildSelectors(); render();
+    $('#itemCount').textContent='…';
+    const arrays=await Promise.all(state.feeds.map((f,i)=>loadOne(f,i)));
+    state.items=arrays.flat().map(it=>({...it,date:it.date?new Date(it.date):null}))
+      .sort((a,b)=> (b.date?.getTime()||0)-(a.date?.getTime()||0));
+    buildSelectors(); render();
   }
 
-  // Boot
-  buildSelectors();
-  loadAll();
-
-  // Expose for console tweaks
-  window.TabirlyMedia = { state, render, loadAll };
+  buildSelectors(); loadAll();
+  window.TabirlyMedia={state,render,loadAll};
   </script>
 </body>
 </html>
