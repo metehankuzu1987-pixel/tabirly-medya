@@ -52,6 +52,9 @@
 
     .footer{color:var(--muted);font-size:12px;padding:6px 2px}
     a{color:#b9d6ff}
+    /* Viewer Mode: soldaki yönetim panelini gizle, içerik tam genişlik */
+.viewer .sidebar{display:none!important}
+.viewer #app{grid-template-columns:1fr!important}
   </style>
 </head>
 <body>
@@ -96,6 +99,23 @@
   // CORS proxy: Kendi Cloudflare Worker URL'inizi yazın (aşağıda worker kodu var).
   const CORS = localStorage.getItem('tabirly_cors') || 'https://r.tabirly.workers.dev';
 
+// Viewer Mode: ?view=1 ile aç veya localStorage ile kalıcılaştır
+const IS_VIEWER = /(?:^|[?&])view=1(?:&|$)/.test(location.search) 
+               || localStorage.getItem('tabirly_viewer') === '1';
+if(IS_VIEWER){ document.documentElement.classList.add('viewer'); }
+
+// Viewer ise feed yönetimini kilitle
+function saveFeeds(){ if(!IS_VIEWER) localStorage.setItem('tabirly_feeds', JSON.stringify(state.feeds)); }
+function loadFeeds(){ 
+  if(!IS_VIEWER){ const raw = localStorage.getItem('tabirly_feeds'); if(raw){ try{ state.feeds = JSON.parse(raw);}catch(e){} } }
+}
+// Yönetim UI’sini viewer’da kapat
+function renderFeeds(){
+  if(IS_VIEWER){ feedList.innerHTML = '<div class="stat">Kaynak yönetimi kapalı (görüntüleme modu)</div>'; return; }
+  // ... (senin mevcut renderFeeds içeriğin burada aynen kalsın)
+}
+
+    
   // Varsayılan örnek feed'ler (dilediğin gibi değiştir):
   const FEEDS = [
     { title:'Tabirly Blog (JSON Feed ör.)', url:'https://jsonfeed.org/feed.json', type:'blog' },
