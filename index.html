@@ -76,6 +76,14 @@
       select, .search input{font-weight:600; padding:9px 10px}
       .btn{padding:7px 9px}
     }
+    /* Fallback (logo) görselleri için daha zarif görünüm */
+.thumb.fallback{ background:#f5eef7 }                 /* yumuşak zemin */
+.thumb img{ width:100%; height:100%; object-fit:cover }
+.thumb.fallback img{
+  object-fit:contain;                                  /* taşıma değil, sığdır */
+  padding:22px;                                        /* boşluk bırak */
+  filter:saturate(110%);                               /* hafif canlılık */
+}
   </style>
 </head>
 <body>
@@ -179,25 +187,28 @@
     selSource.value = state.source;
   }
 
-  function cardHTML(it){
-    // LOGO fallback
-    const img = it.image || it.thumbnail || LOGO_URL;
-    const thumb = `<img src="${img}" alt="${(it.title||'İçerik').replace(/\\\"/g,'&quot;')}" class="thumb" loading="lazy" style="width:100%;height:auto;aspect-ratio:16/9;object-fit:cover">`;
-    const date = it.date ? humanDate(it.date) : '';
-    return `<article class="card" data-kind="${it.kind}" data-src="${it.src||''}">
-      <div class="edge rainbow" aria-hidden="true"></div>
-      ${thumb}
-      <h3 title="${(it.title||'').replace(/\\\"/g,'&quot;')}">${it.title||'Başlıksız'}</h3>
-      <div class="meta">${it.kind.toUpperCase()} • ${it.source||''} • ${date}</div>
-      <p class="desc">${it.summary||''}</p>
-      <div class="actions">
-        <button class="btn primary play">▶ Oynat / Aç</button>
-        <a class="btn" href="${it.link||'#'}" target="_blank" rel="noopener">Bağlantı</a>
-      </div>
-    </article>`
-  }
-
-  function render(){
+function cardHTML(it){
+  const hasImg = Boolean(it.image || it.thumbnail);
+  const imgSrc = hasImg ? (it.image || it.thumbnail) : LOGO_URL;
+  const thumb = `
+    <div class="thumb ${hasImg ? '' : 'fallback'}">
+      <img src="${imgSrc}" alt="${(it.title||'İçerik').replace(/\\"/g,'&quot;')}" loading="lazy">
+    </div>
+  `;
+  const date = it.date ? humanDate(it.date) : '';
+  return `<article class="card" data-kind="${it.kind}" data-src="${it.src||''}">
+    <div class="edge rainbow" aria-hidden="true"></div>
+    ${thumb}
+    <h3 title="${(it.title||'').replace(/\\"/g,'&quot;')}">${it.title||'Başlıksız'}</h3>
+    <div class="meta">${it.kind.toUpperCase()} • ${it.source||''} • ${date}</div>
+    <p class="desc">${it.summary||''}</p>
+    <div class="actions">
+      <button class="btn primary play">▶ Oynat / Aç</button>
+      <a class="btn" href="${it.link||'#'}" target="_blank" rel="noopener">Bağlantı</a>
+    </div>
+  </article>`;
+}
+ function render(){
     const qv = state.q.toLowerCase();
     const filtered = state.items.filter(it=>{
       if(state.kind!=='all' && it.kind!==state.kind) return false;
