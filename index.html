@@ -66,6 +66,60 @@
     .tm-sheet{width:min(1100px,96vw);height:min(80vh,80vh);background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:grid;grid-template-rows:auto 1fr;box-shadow:var(--shadow)}
     .tm-sheet header{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--line)}
     .tm-sheet iframe,.tm-sheet audio,.tm-sheet video{width:100%;height:100%;border:0;background:#000}
+    /* ----- BU KISIMLARI GÜNCELLE ----- */
+
+ .tm-card{
+   grid-column:span 2;
+   display:flex; flex-direction:column;
+   /* height:100% -> bunu siliyoruz, çünkü flexbox zaten gereğini yapacak */
+   border:1px solid var(--line); border-radius:12px;
+   overflow:hidden; background:var(--paper); box-shadow:var(--shadow);
+ }
+
+ /* İçerik alanını esnek hale getirmek için yeni stil */
+ .tm-content {
+   flex: 1; /* Bu sihirli dokunuş, bu alanı genişleterek butonları aşağı iter */
+   padding: 4px 12px 12px;
+   min-height: 100px; /* İçerik çok kısa olsa bile minimum yüksekliği korur */
+ }
+
+ .tm-card h3 {
+   font-size: 14px;
+   font-weight: 700;
+   margin: 8px 0 4px;
+   /* Aşağıdaki 4 satır, başlığı en fazla 2 satır yapıp sonuna ... koyar */
+   display: -webkit-box;
+   -webkit-line-clamp: 2;
+   -webkit-box-orient: vertical;
+   overflow: hidden;
+ }
+
+ .tm-meta {
+   color: var(--muted);
+   font-size: 11px;
+   margin: 0 0 8px; /* Alt boşluğu artırdık */
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+ }
+
+ .tm-desc {
+   display: -webkit-box; /* Bu satır gizlenmiş açıklamayı geri getirir */
+   font-size: 12px;
+   color: var(--muted);
+   line-height: 1.5;
+   margin: 0;
+   /* Aşağıdaki 3 satır, açıklamayı en fazla 3 satır yapıp sonuna ... koyar */
+   -webkit-line-clamp: 3;
+   -webkit-box-orient: vertical;
+   overflow: hidden;
+ }
+ 
+ .tm-actions{
+   display:flex; gap:6px; padding:10px 12px;
+   border-top:1px solid var(--line);
+   /* margin-top: auto; -> buna artık gerek yok, .tm-content hallediyor */
+ }
   </style>
 </head>
 <body>
@@ -161,22 +215,28 @@
     return '📖 Oku';
   };
 
-  function cardHTML(it){
-    const hasImg = Boolean(it.image);
-    const imgSrc = hasImg ? it.image : LOGO_URL; // sabit fallback logo
-    const safeTitle=(it.title||'İçerik').replace(/"/g,'&quot;');
-    return `<article class="tm-card" data-id="${it._id}" data-kind="${it.kind}">
-      <div class="tm-thumb ${hasImg ? '' : 'fallback'}">
-        <img src="${imgSrc}" alt="${safeTitle}" loading="lazy"
-             onerror="this.src='${LOGO_URL}'; this.closest('.tm-thumb').classList.add('fallback');">
-      </div>
-      <h3 title="${safeTitle}">${it.title||'Başlıksız'}</h3>
-      <div class="tm-meta">${it.source||''}</div>
-      <div class="tm-actions">
-        <button class="tm-btn primary tm-play">${primaryLabel(it)}</button>
-      </div>
-    </article>`;
-  }
+function cardHTML(it){
+   const hasImg = Boolean(it.image);
+   const imgSrc = hasImg ? it.image : LOGO_URL;
+   const safeTitle=(it.title||'İçerik').replace(/"/g,'&quot;');
+   
+   // YENİ VE GÜNCELLENMİŞ VERSİYON
+   return `<article class="tm-card" data-id="${it._id}" data-kind="${it.kind}">
+     <div class="tm-thumb ${hasImg ? '' : 'fallback'}">
+       <img src="${imgSrc}" alt="${safeTitle}" loading="lazy"
+            onerror="this.src='${LOGO_URL}'; this.closest('.tm-thumb').classList.add('fallback');">
+     </div>
+     <div class="tm-content">
+       <h3 title="${safeTitle}">${it.title||'Başlıksız'}</h3>
+       <div class="tm-meta">${it.source||''} &middot; ${humanDate(it.date)}</div>
+       <p class="tm-desc">${it.summary||''}</p>
+     </div>
+     <div class="tm-actions">
+       <button class="tm-btn primary tm-play">${primaryLabel(it)}</button>
+       <a href="${it.link}" target="_blank" class="tm-btn">Bağlantı</a>
+     </div>
+   </article>`;
+ }
 
   function filteredItems(){
     const qv = state.q.toLowerCase();
