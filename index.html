@@ -117,9 +117,11 @@
 
   <script>
   // ================== CONFIG ==================
-  // CORS proxy
-const CORS = 'https://little-paper-de94.metehankuzu1987.workers.dev';
+  // 0) LOGO: Görsel yoksa kullanılacak tekil fallback
+  const LOGO_URL = 'https://metehankuzu1987-pixel.github.io/tabirly-medya-k-t-phanesi/logo.png'; // <-- KENDİ LOGONU KOY
 
+  // 1) CORS proxy
+  const CORS = 'https://little-paper-de94.metehankuzu1987.workers.dev';
 
   // 2) Varsayılan feed'ler (dilediğin gibi değiştir)
   const FEEDS = [
@@ -129,6 +131,15 @@ const CORS = 'https://little-paper-de94.metehankuzu1987.workers.dev';
     { title:'Synthwave FM (Müzik Podcast)', url:'https://feeds.simplecast.com/dLRotFG5', type:'music' }
     // YouTube: https://www.youtube.com/feeds/videos.xml?channel_id=...
   ];
+
+  // (Opsiyonel) Admin modu: İlerde panel eklersen kullanırsın
+  const ADMIN_TOKEN = 'tabirly123';
+  const url = new URL(location.href);
+  const isAdmin = ADMIN_TOKEN && (
+    url.searchParams.get('admin') === ADMIN_TOKEN ||
+    localStorage.getItem('tabirly_admin') === ADMIN_TOKEN
+  );
+  if (isAdmin) { document.documentElement.classList.add('admin'); }
 
   // 3) Kategoriler
   const TYPES = [
@@ -168,9 +179,9 @@ const CORS = 'https://little-paper-de94.metehankuzu1987.workers.dev';
   }
 
   function cardHTML(it){
-    const img = it.image || it.thumbnail || '';
-    const thumb = img ? `<img src="${img}" alt="${(it.title||'İçerik').replace(/\\\"/g,'&quot;')}" class="thumb" loading="lazy" style="width:100%;height:auto;aspect-ratio:16/9;object-fit:cover">`
-                       : `<div class="thumb">Önizleme yok</div>`;
+    // LOGO fallback
+    const img = it.image || it.thumbnail || LOGO_URL;
+    const thumb = `<img src="${img}" alt="${(it.title||'İçerik').replace(/\\\"/g,'&quot;')}" class="thumb" loading="lazy" style="width:100%;height:auto;aspect-ratio:16/9;object-fit:cover">`;
     const date = it.date ? humanDate(it.date) : '';
     return `<article class="card" data-kind="${it.kind}" data-src="${it.src||''}">
       <div class="edge rainbow" aria-hidden="true"></div>
@@ -267,11 +278,11 @@ const CORS = 'https://little-paper-de94.metehankuzu1987.workers.dev';
       const thumbUrl = mediaThumb? mediaThumb.getAttribute('url'):'';
       const img = thumbUrl || mediaUrl || attr(it,'content','url') || '';
       let videoEmbed = '';
-      if(link && /youtube.com\\/watch|youtu.be/.test(link)){
-        const id = (link.match(/[?&]v=([\\w-]+)/)||[])[1] || link.split('/').pop();
+      if(link && /youtube.com\/watch|youtu.be/.test(link)){
+        const id = (link.match(/[?&]v=([\w-]+)/)||[])[1] || link.split('/').pop();
         videoEmbed = `https://www.youtube.com/embed/${id}`;
       }
-      const audio = (enc && /audio\\//.test(enc.getAttribute('type')||'')) ? enclosureUrl : '';
+      const audio = (enc && /audio\//.test(enc.getAttribute('type')||'')) ? enclosureUrl : '';
       return { title, link, date:pub, summary:strip(desc), image:img, audio, videoEmbed, source:channelTitle };
     });
     return items;
@@ -326,22 +337,5 @@ const CORS = 'https://little-paper-de94.metehankuzu1987.workers.dev';
   // Expose for console tweaks
   window.TabirlyMedia = { state, render, loadAll };
   </script>
-
-  <!-- ================== OPTIONAL: Cloudflare Worker (CORS Proxy) ==================
-  Deploy et ve yukarıdaki CORS değişkenine Worker URL'ini yaz.
-
-  export default {
-    async fetch(req){
-      const u = new URL(req.url);
-      const target = u.searchParams.get('url');
-      if(!target) return new Response('Missing ?url', {status:400});
-      const r = await fetch(target, { headers: { 'user-agent': req.headers.get('user-agent')||'TabirlyBot/1.0' }});
-      const h = new Headers(r.headers);
-      h.set('access-control-allow-origin','*');
-      h.set('access-control-allow-headers','*');
-      return new Response(await r.text(), {status:r.status, headers:h});
-    }
-  }
-  ================== END WORKER ================== -->
 </body>
 </html>
