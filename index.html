@@ -14,151 +14,93 @@
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);
       font:14px/1.45 system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif}
-    .tm-sr-only{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+    .sr-only{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 
-    /* Üst bar */
-    #tm-app{position:fixed;inset:0;display:flex;flex-direction:column;gap:10px;padding:12px}
-    .tm-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px;border:1px solid var(--line);
-            border-radius:var(--br);background:var(--paper);box-shadow:var(--shadow)}
-    .tm-brand{display:flex;align-items:center;gap:8px;min-width:0}
-    .tm-logo{width:24px;height:24px;border-radius:7px;background:var(--grad)}
-    .tm-title{font:800 14px/1 Inter,system-ui;white-space:nowrap}
-    .tm-grow{flex:1;min-width:160px}
-    .tm-ctl{display:flex;gap:6px;align-items:center}
+    /* Uygulama iskeleti */
+    #app{position:fixed;inset:0;display:flex;flex-direction:column;gap:12px;padding:12px}
+    .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px;border:1px solid var(--line);
+         border-radius:var(--br);background:var(--paper);box-shadow:var(--shadow)}
+    .brand{display:flex;align-items:center;gap:8px;min-width:0}
+    .logo{width:24px;height:24px;border-radius:7px;background:var(--grad)}
+    .title{font:800 14px/1 Inter,system-ui;white-space:nowrap}
+    .grow{flex:1;min-width:160px}
+    .ctl{display:flex;gap:6px;align-items:center}
     select,input[type="text"]{appearance:none;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:#f9faff;color:var(--ink);font-weight:700}
     select{min-width:140px}
-    .tm-search{display:flex;gap:8px;align-items:center}
-    .tm-search input{width:min(420px,60vw)}
-    .tm-counts{margin-left:auto;color:var(--muted);font-size:12px}
+    .search{display:flex;gap:8px;align-items:center}
+    .search input{width:min(420px,60vw)}
+    .counts{margin-left:auto;color:var(--muted);font-size:12px}
 
-    /* Grid – tek tip kart */
-    .tm-grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(12,1fr);gap:10px}
-    @media (max-width:1400px){.tm-grid{grid-template-columns:repeat(10,1fr)}}
-    @media (max-width:1024px){.tm-grid{grid-template-columns:repeat(8,1fr)}}
-    @media (max-width:820px){.tm-grid{grid-template-columns:repeat(6,1fr)}}
-    @media (max-width:640px){.tm-grid{grid-template-columns:repeat(2,1fr)}}
-
-    .tm-card{
-      grid-column:span 2; /* daha sıkı görünüm */
-      display:flex;flex-direction:column;height:100%;
-      border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--paper);box-shadow:var(--shadow)
+    /* GRID — her koşulda sağlam */
+    .grid{flex:1;min-height:0;overflow:auto;scroll-behavior:smooth;
+      display:grid;gap:12px;
+      grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); /* sabit ve esnek */
+      align-content:start}
+    .card{
+      display:flex;flex-direction:column;border:1px solid var(--line);
+      border-radius:12px;overflow:hidden;background:var(--paper);box-shadow:var(--shadow)
     }
-    /* görsel (sabit görünüm) */
-    .tm-thumb{position:relative;width:100%;aspect-ratio:16/9;background:#eef1f8;overflow:hidden}
-    .tm-thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-    /* logo fallback: TAM görünüm */
-    .tm-thumb.fallback{background:#f6edf7}
-    .tm-thumb.fallback img{object-fit:contain;padding:14px}
+    .thumb{position:relative;width:100%;aspect-ratio:16/9;background:#eef1f8;overflow:hidden}
+    .thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+    .thumb.fallback{background:#f6edf7}
+    .thumb.fallback img{object-fit:contain;padding:14px}
 
-    .tm-card h3{font-size:13px;margin:8px 10px 4px}
-    .tm-meta{color:var(--muted);font-size:11px;margin:0 10px 8px}
-    /* intro kaldırıldı */
-    .tm-desc{display:none}
+    .body{display:flex;flex-direction:column;gap:6px;padding:10px 12px 8px;min-height:88px;flex:1}
+    .card h3{font-size:14px;font-weight:800;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .meta{color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-    .tm-actions{display:flex;gap:6px;padding:8px 10px;border-top:1px solid var(--line);margin-top:auto}
-    .tm-btn{appearance:none;border:1px solid var(--line);background:#f1f4ff;color:#192038;padding:6px 8px;border-radius:8px;font:700 11px/1 Inter;cursor:pointer}
-    .tm-btn.primary{border-color:transparent;color:#fff;background:var(--grad)}
-    /* Kart/“chip” karışıklığını kesin bitirmek için alan seçici */
-    .tm-grid > .tm-card{display:flex}
-    /* Modal */
-    .tm-modal{position:fixed;inset:0;background:rgba(15,19,32,.55);display:none;align-items:center;justify-content:center;padding:16px}
-    .tm-modal.open{display:flex}
-    .tm-sheet{width:min(1100px,96vw);height:min(80vh,80vh);background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:grid;grid-template-rows:auto 1fr;box-shadow:var(--shadow)}
-    .tm-sheet header{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--line)}
-    .tm-sheet iframe,.tm-sheet audio,.tm-sheet video{width:100%;height:100%;border:0;background:#000}
-    /* ----- BU KISIMLARI GÜNCELLE ----- */
+    .actions{display:flex;gap:6px;padding:10px 12px;border-top:1px solid var(--line)}
+    .btn{appearance:none;border:1px solid var(--line);background:#f1f4ff;color:#192038;padding:6px 8px;border-radius:8px;font:700 11px/1 Inter;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+    .btn.primary{border-color:transparent;color:#fff;background:var(--grad)}
 
- .tm-card{
-   grid-column:span 2;
-   display:flex; flex-direction:column;
-   /* height:100% -> bunu siliyoruz, çünkü flexbox zaten gereğini yapacak */
-   border:1px solid var(--line); border-radius:12px;
-   overflow:hidden; background:var(--paper); box-shadow:var(--shadow);
- }
+    /* Modal oynatıcı */
+    .modal{position:fixed;inset:0;background:rgba(15,19,32,.55);display:none;align-items:center;justify-content:center;padding:16px}
+    .modal.open{display:flex}
+    .sheet{width:min(1100px,96vw);height:min(80vh,80vh);background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:grid;grid-template-rows:auto 1fr;box-shadow:var(--shadow)}
+    .sheet header{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--line)}
+    .sheet iframe,.sheet audio,.sheet video{width:100%;height:100%;border:0;background:#000}
 
- /* İçerik alanını esnek hale getirmek için yeni stil */
- .tm-content {
-   flex: 1; /* Bu sihirli dokunuş, bu alanı genişleterek butonları aşağı iter */
-   padding: 4px 12px 12px;
-   min-height: 100px; /* İçerik çok kısa olsa bile minimum yüksekliği korur */
- }
-
- .tm-card h3 {
-   font-size: 14px;
-   font-weight: 700;
-   margin: 8px 0 4px;
-   /* Aşağıdaki 4 satır, başlığı en fazla 2 satır yapıp sonuna ... koyar */
-   display: -webkit-box;
-   -webkit-line-clamp: 2;
-   -webkit-box-orient: vertical;
-   overflow: hidden;
- }
-
- .tm-meta {
-   color: var(--muted);
-   font-size: 11px;
-   margin: 0 0 8px; /* Alt boşluğu artırdık */
-   white-space: nowrap;
-   overflow: hidden;
-   text-overflow: ellipsis;
- }
-
- .tm-desc {
-   display: -webkit-box; /* Bu satır gizlenmiş açıklamayı geri getirir */
-   font-size: 12px;
-   color: var(--muted);
-   line-height: 1.5;
-   margin: 0;
-   /* Aşağıdaki 3 satır, açıklamayı en fazla 3 satır yapıp sonuna ... koyar */
-   -webkit-line-clamp: 3;
-   -webkit-box-orient: vertical;
-   overflow: hidden;
- }
- 
- .tm-actions{
-   display:flex; gap:6px; padding:10px 12px;
-   border-top:1px solid var(--line);
-   /* margin-top: auto; -> buna artık gerek yok, .tm-content hallediyor */
- }
+    /* Sonsuz akış sentinel */
+    .sentinel{height:1px}
   </style>
 </head>
 <body>
-  <div id="tm-app">
-    <div class="tm-top">
-      <div class="tm-brand">
-        <div class="tm-logo" aria-hidden="true"></div>
-        <div class="tm-title">Tabirly Medya Kütüphanesi</div>
+  <div id="app">
+    <div class="top">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div class="title">Tabirly Medya Kütüphanesi</div>
       </div>
-      <div class="tm-ctl">
-        <label class="tm-sr-only" for="tm-kind">Kategori</label>
-        <select id="tm-kind" title="Kategori seç (Blog/Podcast/Video/Müzik)"></select>
+      <div class="ctl">
+        <label class="sr-only" for="kind">Kategori</label>
+        <select id="kind" title="Kategori seç (Blog/Podcast/Video/Müzik)"></select>
       </div>
-      <div class="tm-ctl">
-        <label class="tm-sr-only" for="tm-source">Kaynak</label>
-        <select id="tm-source" title="Kaynağa göre filtrele"></select>
+      <div class="ctl">
+        <label class="sr-only" for="source">Kaynak</label>
+        <select id="source" title="Kaynağa göre filtrele"></select>
       </div>
-      <div class="tm-search tm-grow">
-        <input id="tm-q" type="text" placeholder="Ara: başlık, açıklama, kaynak..." />
+      <div class="search grow">
+        <input id="q" type="text" placeholder="Ara: başlık, kaynak..." />
       </div>
-      <div class="tm-counts"><span id="tm-feedCount">0</span> kaynak · <span id="tm-itemCount">0</span> içerik</div>
+      <div class="counts"><span id="feedCount">0</span> kaynak · <span id="shownCount">0</span>/<span id="totalCount">0</span> içerik</div>
     </div>
 
-    <div id="tm-grid" class="tm-grid"></div>
+    <div id="grid" class="grid" aria-live="polite"></div>
+    <div id="sentinel" class="sentinel"></div>
   </div>
 
-  <div id="tm-playerModal" class="tm-modal" role="dialog" aria-modal="true">
-    <div class="tm-sheet">
+  <div id="playerModal" class="modal" role="dialog" aria-modal="true">
+    <div class="sheet">
       <header>
-        <div id="tm-playerTitle">Oynatıcı</div>
-        <button id="tm-closePlayer" class="tm-btn">Kapat ✖</button>
+        <div id="playerTitle">Oynatıcı</div>
+        <button id="closePlayer" class="btn">Kapat ✖</button>
       </header>
-      <div id="tm-playerBody"></div>
+      <div id="playerBody"></div>
     </div>
   </div>
 
   <script>
   /* ===== CONFIG ===== */
-  // Yerleşik (inline) logo — “tam görünüm” (fallback)
   const LOGO_URL = 'data:image/svg+xml;utf8,\
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 288">\
     <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0">\
@@ -191,14 +133,27 @@
 
   /* ===== STATE / REFS ===== */
   const $=(s,r=document)=>r.querySelector(s);
-  const grid=$('#tm-grid'), q=$('#tm-q'), playerModal=$('#tm-playerModal'),
-        playerBody=$('#tm-playerBody'), playerTitle=$('#tm-playerTitle'),
-        selKind=$('#tm-kind'), selSource=$('#tm-source');
-  let state={items:[],feeds:FEEDS,kind:'all',source:'all',q:''};
+  const grid=$('#grid'), q=$('#q'), playerModal=$('#playerModal'),
+        playerBody=$('#playerBody'), playerTitle=$('#playerTitle'),
+        selKind=$('#kind'), selSource=$('#source'),
+        sentinel=$('#sentinel');
+  let state={
+    items:[], feeds:FEEDS, kind:'all', source:'all', q:'',
+    filtered:[], shown:0, pageSize:24
+  };
 
-  const setCounts=()=>{$('#tm-feedCount').textContent=state.feeds.length; $('#tm-itemCount').textContent=filteredItems().length;};
-  const humanDate=d=>{ try{return new Date(d).toLocaleString('tr-TR')}catch(e){return''} };
-  const strip=html=>{ if(!html) return ''; const t=document.createElement('div'); t.innerHTML=html; return (t.textContent||'').trim().slice(0,240); };
+  const setCounts=()=>{
+    $('#feedCount').textContent=state.feeds.length;
+    $('#totalCount').textContent=state.filtered.length;
+    $('#shownCount').textContent=state.shown;
+  };
+  const humanDate=d=>{ try{return d?new Date(d).toLocaleDateString('tr-TR'):""}catch(e){return''} };
+  const strip=html=>{
+    if(!html) return '';
+    const t=document.createElement('div'); t.innerHTML=html;
+    // sadece metin; kartta açıklama göstermiyoruz.
+    return (t.textContent||'').trim();
+  };
 
   function buildSelectors(){
     selKind.innerHTML = TYPES.map(t=>`<option value="${t.key}">${t.label}</option>`).join('');
@@ -215,28 +170,25 @@
     return '📖 Oku';
   };
 
-function cardHTML(it){
-   const hasImg = Boolean(it.image);
-   const imgSrc = hasImg ? it.image : LOGO_URL;
-   const safeTitle=(it.title||'İçerik').replace(/"/g,'&quot;');
-   
-   // YENİ VE GÜNCELLENMİŞ VERSİYON
-   return `<article class="tm-card" data-id="${it._id}" data-kind="${it.kind}">
-     <div class="tm-thumb ${hasImg ? '' : 'fallback'}">
-       <img src="${imgSrc}" alt="${safeTitle}" loading="lazy"
-            onerror="this.src='${LOGO_URL}'; this.closest('.tm-thumb').classList.add('fallback');">
-     </div>
-     <div class="tm-content">
-       <h3 title="${safeTitle}">${it.title||'Başlıksız'}</h3>
-       <div class="tm-meta">${it.source||''} &middot; ${humanDate(it.date)}</div>
-       <p class="tm-desc">${it.summary||''}</p>
-     </div>
-     <div class="tm-actions">
-       <button class="tm-btn primary tm-play">${primaryLabel(it)}</button>
-       <a href="${it.link}" target="_blank" class="tm-btn">Bağlantı</a>
-     </div>
-   </article>`;
- }
+  function cardHTML(it){
+    const hasImg = Boolean(it.image);
+    const imgSrc = hasImg ? it.image : LOGO_URL;
+    const safeTitle=(it.title||'İçerik').replace(/"/g,'&quot;');
+    return `<article class="card" data-id="${it._id}" data-kind="${it.kind}">
+      <div class="thumb ${hasImg ? '' : 'fallback'}">
+        <img src="${imgSrc}" alt="${safeTitle}" loading="lazy"
+             onerror="this.src='${LOGO_URL}'; this.closest('.thumb').classList.add('fallback');">
+      </div>
+      <div class="body">
+        <h3 title="${safeTitle}">${it.title||'Başlıksız'}</h3>
+        <div class="meta">${it.source||''}${it.date?` · ${humanDate(it.date)}`:''}</div>
+      </div>
+      <div class="actions">
+        <button class="btn primary play">${primaryLabel(it)}</button>
+        <a href="${it.link}" target="_blank" class="btn">Bağlantı</a>
+      </div>
+    </article>`;
+  }
 
   function filteredItems(){
     const qv = state.q.toLowerCase();
@@ -244,14 +196,29 @@ function cardHTML(it){
       if(state.kind!=='all' && it.kind!==state.kind) return false;
       if(state.source!=='all' && it._sourceIndex!==Number(state.source)) return false;
       if(!qv) return true;
-      return [it.title,it.summary,it.source].filter(Boolean).join(' ').toLowerCase().includes(qv);
+      return [it.title,it.source].filter(Boolean).join(' ').toLowerCase().includes(qv);
     });
   }
 
-  function render(){
-    const list = filteredItems();
-    grid.innerHTML = list.map(cardHTML).join('');
+  function resetAndRender(){
+    state.filtered = filteredItems();
+    state.shown = 0;
+    grid.innerHTML = '';
+    renderNext(true);
+  }
+
+  function renderNext(initial=false){
+    const start = state.shown;
+    const end = Math.min(state.shown + state.pageSize, state.filtered.length);
+    const slice = state.filtered.slice(start,end);
+    const frag = document.createDocumentFragment();
+    const div = document.createElement('div');
+    div.innerHTML = slice.map(cardHTML).join('');
+    while(div.firstChild) frag.appendChild(div.firstChild);
+    grid.appendChild(frag);
+    state.shown = end;
     setCounts();
+    if(initial) window.scrollTo({top:0,behavior:'instant'});
   }
 
   function openPlayer(it){
@@ -262,23 +229,23 @@ function cardHTML(it){
     }else if(it.videoEmbed){
       const f=document.createElement('iframe'); f.allow='autoplay; encrypted-media; picture-in-picture'; f.referrerPolicy='no-referrer-when-downgrade'; f.src=it.videoEmbed; playerBody.appendChild(f);
     }else if(it.link){
-      const f=document.createElement('iframe'); f.src=it.link; playerBody.appendChild(f);
+      window.open(it.link,'_blank'); return; // blog ise yeni sekme
     }else{
       playerBody.innerHTML='<div style="padding:16px">Görüntülenecek medya bulunamadı.</div>';
     }
     playerModal.classList.add('open');
   }
-  $('#tm-closePlayer').onclick=()=>playerModal.classList.remove('open');
+  $('#closePlayer').onclick=()=>playerModal.classList.remove('open');
 
-  let t; q.oninput=()=>{ clearTimeout(t); t=setTimeout(()=>{ state.q=q.value; render(); },120); };
-  selKind.onchange=()=>{ state.kind=selKind.value; render(); };
-  selSource.onchange=()=>{ state.source=selSource.value; render(); };
+  let t; q.oninput=()=>{ clearTimeout(t); t=setTimeout(()=>{ state.q=q.value; resetAndRender(); },150); };
+  selKind.onchange=()=>{ state.kind=selKind.value; resetAndRender(); };
+  selSource.onchange=()=>{ state.source=selSource.value; resetAndRender(); };
 
   grid.addEventListener('click',e=>{
-    const card=e.target.closest('.tm-card'); if(!card) return;
-    const it = state.items.find(x=>String(x._id)===card.dataset.id);
+    const card=e.target.closest('.card'); if(!card) return;
+    const it = state.filtered[Number(card.dataset.id)] || state.items.find(x=>String(x._id)===card.dataset.id);
     if(!it) return;
-    if(e.target.classList.contains('tm-play')) openPlayer(it);
+    if(e.target.classList.contains('play')) openPlayer(it);
   });
 
   /* ===== FETCH/PARSE ===== */
@@ -292,6 +259,14 @@ function cardHTML(it){
   const textContent=(n,s)=>{const el=n.querySelector(s);return el?(el.textContent||'').trim():''};
   const attr=(n,s,a)=>{const el=n.querySelector(s);return el?el.getAttribute(a):''};
 
+  const firstImgFromHTML = (html) => {
+    if(!html) return '';
+    const t=document.createElement('div'); t.innerHTML=html;
+    const img=t.querySelector('img[src]');
+    const src=img?.getAttribute('src')||'';
+    return /^https?:/i.test(src) ? src : '';
+  };
+
   function parseXML(xmlStr){
     const doc=new DOMParser().parseFromString(xmlStr,'application/xml');
     const isAtom=!!doc.querySelector('feed > entry');
@@ -302,15 +277,16 @@ function cardHTML(it){
       const title=textContent(it,'title');
       const link=isAtom?(attr(it,'link','href')||textContent(it,'link')):textContent(it,'link');
       const pub=textContent(it,isAtom?'updated':'pubDate') || textContent(it,'dc\\:date');
-      const desc=textContent(it,isAtom?'summary':'description') || textContent(it,'content\\:encoded');
+      const descRaw=textContent(it,isAtom?'summary':'description') || textContent(it,'content\\:encoded');
+      const desc=strip(descRaw);
 
       const enc=it.querySelector('enclosure');
       const mediaContent=it.querySelector('media\\:content');
       const mediaThumb=it.querySelector('media\\:thumbnail');
       const itunesImg=attr(it,'itunes\\:image','href');
-      const img = (mediaThumb&&mediaThumb.getAttribute('url')) ||
-                  (mediaContent&&mediaContent.getAttribute('url')) ||
-                  itunesImg || chanImg || '';
+      let img = (mediaThumb&&mediaThumb.getAttribute('url')) ||
+                (mediaContent&&mediaContent.getAttribute('url')) ||
+                itunesImg || firstImgFromHTML(descRaw) || chanImg || '';
 
       let videoEmbed='';
       if(link && /youtube\.com\/watch|youtu\.be/.test(link)){
@@ -319,7 +295,7 @@ function cardHTML(it){
       }
       const audio=(enc && /audio\//.test(enc.getAttribute('type')||'')) ? enc.getAttribute('url') : '';
 
-      return {title,link,date:pub,summary:strip(desc),image:img||'',audio,videoEmbed,source:channelTitle};
+      return {title,link,date:pub,summary:desc,image:img||'',audio,videoEmbed,source:channelTitle};
     });
     return items;
   }
@@ -331,7 +307,7 @@ function cardHTML(it){
       link:it.url||(it.external_url||''),
       date:it.date_published||it.date_modified,
       summary:strip(it.summary||it.content_text||it.content_html||''),
-      image:it.image||((it.attachments||[])[0]?.url)||'',
+      image:it.image||((it.attachments||[])[0]?.url)||firstImgFromHTML(it.content_html)||'',
       audio:(it.attachments||[]).find(a=>(a.mime_type||'').startsWith('audio/'))?.url||'',
       source:title
     }));
@@ -360,7 +336,7 @@ function cardHTML(it){
   }
 
   async function loadAll(){
-    $('#tm-itemCount').textContent='…';
+    $('#totalCount').textContent='…';
     const arrays=await Promise.all(state.feeds.map((f,i)=>loadOne(f,i)));
     let items=arrays.flat().map(it=>({...it,date:it.date?new Date(it.date):null}));
     items = dedupeByLink(items).sort((a,b)=> (b.date?.getTime()||0)-(a.date?.getTime()||0));
@@ -368,13 +344,25 @@ function cardHTML(it){
     state.items = items.map((it,idx)=>({
       ...it,
       _id: String(idx),
-      image: (it.image && /^https?:/i.test(it.image)) ? it.image : '' // bozuk/relative ise boş (logo düşer)
+      image: (it.image && /^https?:/i.test(it.image)) ? it.image : '' // bozuk/relative ise logo düşer
     }));
-    buildSelectors(); render();
+    buildSelectors();
+    state.filtered = filteredItems();
+    resetAndRender();
   }
 
+  /* Sonsuz akış (IntersectionObserver) */
+  const io = new IntersectionObserver((entries)=>{
+    const e = entries[0];
+    if(!e.isIntersecting) return;
+    if(state.shown < state.filtered.length) renderNext();
+  },{root:null,rootMargin:'1000px 0px 1000px 0px',threshold:0});
+  io.observe(sentinel);
+
+  /* Başlat */
   buildSelectors(); loadAll();
-  window.TabirlyMedia={state,render,loadAll};
+
+  window.TabirlyMedia={state,resetAndRender,loadAll};
   </script>
 </body>
 </html>
