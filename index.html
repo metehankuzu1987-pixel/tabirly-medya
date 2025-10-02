@@ -12,30 +12,39 @@
       --grad:linear-gradient(90deg,#ff0080,#ff8c00,#ffd700,#00d084,#00bfff,#7b61ff,#ff0080);
     }
     *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);
+    html,body{min-height:100%;margin:0;background:var(--bg);color:var(--ink);
       font:14px/1.45 system-ui,-apple-system,Segoe UI,Inter,Roboto,Arial,sans-serif}
     .sr-only{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 
-    /* Uygulama iskeleti */
-    #app{position:fixed;inset:0;display:flex;flex-direction:column;gap:12px;padding:12px}
-    .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px;border:1px solid var(--line);
-         border-radius:var(--br);background:var(--paper);box-shadow:var(--shadow)}
+    /* Uygulama iskeleti (MOBİLE-ÖNCEL) */
+    #app{
+      min-height:100svh; /* address bar dalgalanmalarına dayanıklı */
+      display:flex;flex-direction:column;gap:12px;padding:12px;
+    }
+    .top{
+      position:sticky;top:0;z-index:5;
+      display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+      padding:10px;border:1px solid var(--line);
+      border-radius:var(--br);background:var(--paper);box-shadow:var(--shadow)
+    }
     .brand{display:flex;align-items:center;gap:8px;min-width:0}
     .logo{width:24px;height:24px;border-radius:7px;background:var(--grad)}
     .title{font:800 14px/1 Inter,system-ui;white-space:nowrap}
-    .grow{flex:1;min-width:160px}
+    .grow{flex:1;min-width:150px}
     .ctl{display:flex;gap:6px;align-items:center}
     select,input[type="text"]{appearance:none;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:#f9faff;color:var(--ink);font-weight:700}
     select{min-width:140px}
-    .search{display:flex;gap:8px;align-items:center}
-    .search input{width:min(420px,60vw)}
-    .counts{margin-left:auto;color:var(--muted);font-size:12px}
+    .search{display:flex;gap:8px;align-items:center;flex:1}
+    .search input{width:100%}
+    .counts{margin-left:auto;color:var(--muted);font-size:12px;white-space:nowrap}
 
-    /* GRID — her koşulda sağlam */
-    .grid{flex:1;min-height:0;overflow:auto;scroll-behavior:smooth;
+    /* GRID — her koşulda sağlam, eşit yükseklikte kart */
+    .grid{
+      flex:1;min-height:0;overflow:auto;scroll-behavior:smooth;
       display:grid;gap:12px;
-      grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); /* sabit ve esnek */
-      align-content:start}
+      grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+      align-content:start
+    }
     .card{
       display:flex;flex-direction:column;border:1px solid var(--line);
       border-radius:12px;overflow:hidden;background:var(--paper);box-shadow:var(--shadow)
@@ -50,8 +59,21 @@
     .meta{color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
     .actions{display:flex;gap:6px;padding:10px 12px;border-top:1px solid var(--line)}
-    .btn{appearance:none;border:1px solid var(--line);background:#f1f4ff;color:#192038;padding:6px 8px;border-radius:8px;font:700 11px/1 Inter;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+    .btn{appearance:none;border:1px solid var(--line);background:#f1f4ff;color:#192038;padding:10px 12px;border-radius:10px;font:700 12px/1 Inter;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;touch-action:manipulation}
     .btn.primary{border-color:transparent;color:#fff;background:var(--grad)}
+
+    /* Floating actions (Geri / Yenile / Ana Sayfa) */
+    .fab{
+      position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));
+      display:flex;flex-direction:column;gap:10px;z-index:6
+    }
+    .fab .fbtn{
+      width:46px;height:46px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);
+      font-size:18px;cursor:pointer
+    }
+    .fab .fbtn.primary{background:var(--grad);color:#fff;border-color:transparent}
 
     /* Modal oynatıcı */
     .modal{position:fixed;inset:0;background:rgba(15,19,32,.55);display:none;align-items:center;justify-content:center;padding:16px}
@@ -60,8 +82,17 @@
     .sheet header{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--line)}
     .sheet iframe,.sheet audio,.sheet video{width:100%;height:100%;border:0;background:#000}
 
-    /* Sonsuz akış sentinel */
     .sentinel{height:1px}
+
+    /* Küçük ekran optimizasyonları */
+    @media (max-width:560px){
+      .counts{display:none}
+      .top{gap:8px}
+      select{min-width:0;width:100%}
+      .ctl{flex:1}
+      .grid{gap:10px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+      .btn{padding:8px 10px;font-size:11px;border-radius:9px}
+    }
   </style>
 </head>
 <body>
@@ -87,6 +118,13 @@
 
     <div id="grid" class="grid" aria-live="polite"></div>
     <div id="sentinel" class="sentinel"></div>
+  </div>
+
+  <!-- Floating Buttons -->
+  <div class="fab" aria-label="Hızlı işlemler">
+    <button id="btnBack" class="fbtn" title="Geri dön" aria-label="Geri dön">⟵</button>
+    <button id="btnRefresh" class="fbtn" title="Yenile" aria-label="Yenile">⟳</button>
+    <button id="btnHome" class="fbtn primary" title="Ana sayfa" aria-label="Ana sayfa">🏠</button>
   </div>
 
   <div id="playerModal" class="modal" role="dialog" aria-modal="true">
@@ -140,7 +178,6 @@
   const strip=html=>{
     if(!html) return '';
     const t=document.createElement('div'); t.innerHTML=html;
-    // sadece metin; kartta açıklama göstermiyoruz.
     return (t.textContent||'').trim();
   };
 
@@ -218,7 +255,7 @@
     }else if(it.videoEmbed){
       const f=document.createElement('iframe'); f.allow='autoplay; encrypted-media; picture-in-picture'; f.referrerPolicy='no-referrer-when-downgrade'; f.src=it.videoEmbed; playerBody.appendChild(f);
     }else if(it.link){
-      window.open(it.link,'_blank'); return; // blog ise yeni sekme
+      window.open(it.link,'_blank'); return;
     }else{
       playerBody.innerHTML='<div style="padding:16px">Görüntülenecek medya bulunamadı.</div>';
     }
@@ -232,7 +269,7 @@
 
   grid.addEventListener('click',e=>{
     const card=e.target.closest('.card'); if(!card) return;
-    const it = state.filtered[Number(card.dataset.id)] || state.items.find(x=>String(x._id)===card.dataset.id);
+    const it = state.items.find(x=>String(x._id)===card.dataset.id);
     if(!it) return;
     if(e.target.classList.contains('play')) openPlayer(it);
   });
@@ -340,13 +377,18 @@
     resetAndRender();
   }
 
-  /* Sonsuz akış (IntersectionObserver) */
+  /* Sonsuz akış */
   const io = new IntersectionObserver((entries)=>{
     const e = entries[0];
     if(!e.isIntersecting) return;
     if(state.shown < state.filtered.length) renderNext();
-  },{root:null,rootMargin:'1000px 0px 1000px 0px',threshold:0});
+  },{root:null,rootMargin:'800px 0px 800px 0px',threshold:0});
   io.observe(sentinel);
+
+  /* Hızlı butonlar */
+  $('#btnHome').onclick = ()=>{ location.href='https://tr.tabirly.com/'; };
+  $('#btnRefresh').onclick = ()=>{ location.reload(); };
+  $('#btnBack').onclick = ()=>{ if(history.length>1){ history.back(); } else { location.href='https://tr.tabirly.com/'; } };
 
   /* Başlat */
   buildSelectors(); loadAll();
